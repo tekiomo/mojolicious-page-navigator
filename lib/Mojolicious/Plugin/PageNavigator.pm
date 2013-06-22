@@ -22,9 +22,10 @@ sub  register{
       return "" unless $count > 1;
       $opts = {} unless $opts;
       my $round = $opts->{round} || 4;
-      my $class = $opts->{class} || "number";
       my $param = $opts->{param} || "page";
       my $outer = $opts->{outer} || 2;
+      my $size  = $opts->{size};
+      my $align = $opts->{align};
       my @current = ( $actual - $round .. $actual + $round );
       my @first   = ( $round > $actual ? (1..$round * 3 ) : (1..$outer) );
       my @tail    = ( $count - $round < $actual ? ( $count - $round * 2 + 1 .. $count ) : 
@@ -39,28 +40,30 @@ sub  register{
         push @ret, $number;
         $last = $number;
       }
+      $size  = $size  ? "pagination-${size}"  : '';
+      $align = $align ? "pagination-${align}" : '';
       
-      my $html = "<div>";
+      my $html = "<div class=\"pagination ${size} ${align}\"><ul>";
       if( $actual == 1 ){
-        $html .= "<span class=\"$class\">&lt;&lt;</span>";
+        $html .= "<li class=\"disable\"><span>&laquo;</span></li>";
       } else {
-        $html .= "<a href=\"" . $self->url_for->query( $param => $actual - 1 ) . "\" class=\"$class\">&lt;&lt;</a>";
+        $html .= "<li><a href=\"" . $self->url_for->query( $param => $actual - 1 ) . "\">&laquo;</a></li>";
       }
       foreach my $number( @ret ){
         if( $number eq ".." ){
-          $html .= "<span class=\"$class\">..</span>";
+          $html .= "<li class=\"disable\"><span>&hellip;</span></li>";
         } elsif( $number == $actual ) {
-        $html .= "<span class=\"$class\">$number</span>";
+        $html .= "<li class=\"active\"><span>$number</span>";
         } else {
-          $html .= "<a href=\"" . $self->url_for->query( $param => $number ) ."\" class=\"$class\">$number</a>";
+          $html .= "<li><a href=\"" . $self->url_for->query( $param => $number ) ."\">$number</a></li>";
         }
       }
       if( $actual == $count ){
-        $html .= "<span class=\"$class\">&gt;&gt;</span>";
+        $html .= "<li class=\"disable\"><span>&raquo;</span></li>";
       } else {
-        $html .= "<a href=\"" . $self->url_for->query( $param => $actual + 1 ) . "\" class=\"$class\">&gt;&gt;</a>"
+        $html .= "<li><a href=\"" . $self->url_for->query( $param => $actual + 1 ) . "\">&raquo;</a></li>"
       }
-      $html .= "<span style=\"clear: left; width: 1px;\">&nbsp;</span></div>";
+      $html .= "</ul></div>";
       return b( $html );
     } );
 
