@@ -68,7 +68,7 @@ sub  register{
       if( $actual == $count ){
         $html .= "<li class=\"disable\"><span>&raquo;</span></li>";
       } else {
-        $parameter->{$param} = $actual - 1;
+        $parameter->{$param} = $actual + 1;
         $html .= "<li><a href=\"" . $self->url_for->query( $parameter ) . "\">&raquo;</a></li>"
       }
       $html .= "</ul></div>";
