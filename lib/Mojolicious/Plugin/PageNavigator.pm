@@ -43,11 +43,17 @@ sub  register{
       $size  = $size  ? "pagination-${size}"  : '';
       $align = $align ? "pagination-${align}" : '';
       
+      my $parameter = {};
+      foreach my $key ( $self->param ) {
+          $parameter->{$key} = $self->param($key);
+      }
+
       my $html = "<div class=\"pagination ${size} ${align}\"><ul>";
       if( $actual == 1 ){
         $html .= "<li class=\"disable\"><span>&laquo;</span></li>";
       } else {
-        $html .= "<li><a href=\"" . $self->url_for->query( $param => $actual - 1 ) . "\">&laquo;</a></li>";
+        $parameter->{$param} = $actual - 1;
+        $html .= "<li><a href=\"" . $self->url_for->query( $parameter ) . "\">&laquo;</a></li>";
       }
       foreach my $number( @ret ){
         if( $number eq ".." ){
@@ -55,13 +61,15 @@ sub  register{
         } elsif( $number == $actual ) {
         $html .= "<li class=\"active\"><span>$number</span>";
         } else {
-          $html .= "<li><a href=\"" . $self->url_for->query( $param => $number ) ."\">$number</a></li>";
+          $parameter->{$param} = $number;
+          $html .= "<li><a href=\"" . $self->url_for->query( $parameter ) ."\">$number</a></li>";
         }
       }
       if( $actual == $count ){
         $html .= "<li class=\"disable\"><span>&raquo;</span></li>";
       } else {
-        $html .= "<li><a href=\"" . $self->url_for->query( $param => $actual + 1 ) . "\">&raquo;</a></li>"
+        $parameter->{$param} = $actual - 1;
+        $html .= "<li><a href=\"" . $self->url_for->query( $parameter ) . "\">&raquo;</a></li>"
       }
       $html .= "</ul></div>";
       return b( $html );
